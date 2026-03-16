@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken'; 
 
 const protect = (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!req.headers) {
-        return res.status(401).json({ message: "Not authorized" }); 
+    const token = req.cookies.jwt;
+
+    if (!token) {
+        res.status(404).json({ error: "invalid token" });
     }
 
     try {
@@ -12,7 +12,7 @@ const protect = (req, res, next) => {
         req.user = decoded; 
         next(); 
     } catch {
-        res.status(401).json({ message: "Invalid token" }); 
+        res.status(401).json({ message: "not authorized" }); 
     }
 }; 
 
