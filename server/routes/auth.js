@@ -1,5 +1,5 @@
 import express from 'express'; 
-import brcypt from 'bcryptjs'; 
+import bcrypt from 'bcryptjs'; 
 import jwt from 'jsonwebtoken'; 
 import User from '../models/User.js';
 
@@ -7,6 +7,16 @@ const router = express.Router();
 
 const generateToken = (id) => 
     jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" }) 
+
+
+//post test
+router.post('/test', async (req, res) => {
+    const { name, email, password } = req.body;
+
+    res.json({
+        name, email, password
+    }); 
+})
 
 // post /api/auth/register 
 router.post('/register', async (req, res) => {
@@ -29,6 +39,7 @@ router.post('/register', async (req, res) => {
         });
     } catch (err) {
         return res.status(500).json({ message: err.message }); 
+        console.log(err.message);
     }
 });
 

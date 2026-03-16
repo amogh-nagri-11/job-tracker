@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from 'cors'; 
 import mongoose from 'mongoose'; 
 import authRoutes from './routes/auth.js';
+import jobRoutes from './routes/jobs.js';
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // routes 
 app.use('/api/auth', authRoutes);
+app.use('/api/jobs', jobRoutes);
 app.get('/', (req, res) => res.json({ message: "Job tracker api up and running " })); 
 
 await mongoose.connect(process.env.MONGO_URI); 
