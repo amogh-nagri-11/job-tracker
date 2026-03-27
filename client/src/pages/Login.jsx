@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useAuth } from '../hooks/useAuth.js';
 import api from '../api/axios';
 
@@ -8,6 +9,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [show, setShow] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,13 +34,21 @@ export default function Login() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           required
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          required
-        />
+        <div className="password-wrapper">
+          <input
+            type={show ? 'text' : 'password'}
+            placeholder="Password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required
+          />
+          <span
+            className="eye"
+            onClick={()=>setShow(s=>!s)}
+          >
+            {show ? <FiEyeOff/> : <FiEye/>}
+          </span>
+        </div>
         <button type="submit">Login</button>
       </form>
       <p>Don't have an account? <Link to="/register">Register</Link></p>

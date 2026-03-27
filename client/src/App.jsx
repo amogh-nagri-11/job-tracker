@@ -5,7 +5,9 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) return <div className='loading'>Loading...</div>
   return user ? children : <Navigate to="/login" />;
 };
 

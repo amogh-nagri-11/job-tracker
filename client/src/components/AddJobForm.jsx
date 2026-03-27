@@ -8,8 +8,8 @@ export default function AddJobForm({ onAdd }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await api.post('/api/jobs', form);
-    onAdd();
+    const { data} = await api.post('/api/jobs', form);
+    onAdd(data);
   };
 
   return (

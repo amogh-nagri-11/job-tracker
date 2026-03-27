@@ -12,6 +12,17 @@ const jobSchema = new mongoose.Schema({
     notes: { type: String, default: '' }, 
     appliedDate: { type: Date, default: Date.now() }, 
     followupSent: { type: Boolean, default: false },
+    source: {
+        type: String,
+        enum: ['manual', 'email'],
+        default: 'manual',
+    },
+    mailMetadata: {
+        messageId: { type: String },
+        from: { type: String },
+        subject: { type: String },
+        receivedAt: { type: Date },
+    },
 }, { timestamps: true });
 
 export default mongoose.model("Job", jobSchema);

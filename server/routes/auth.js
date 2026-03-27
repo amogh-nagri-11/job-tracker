@@ -3,16 +3,28 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; 
 import User from '../models/User.js';
 import { generateToken } from '../utils/generateToken.js';
+import protect from '../middleware/authMiddleware.js';
+
 
 const router = express.Router(); 
 
 // const generateToken = (id) => 
 //     jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" }) 
 
+//for refresh /api/auth/me
+router.get('/me', protect, async (req, res) => {
+    try { 
+        const user = await User.findById(req.user.id).select('-password'); 
+        if (!user) return res.status(404).json({ error: "User not found" }); 
+        res.status(200).json(user); 
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+}); 
+
 //post test
 router.post('/test', async (req, res) => {
     const { name, email, password } = req.body;
-
     res.json({
         name, email, password
     }); 

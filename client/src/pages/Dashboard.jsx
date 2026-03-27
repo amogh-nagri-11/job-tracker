@@ -11,24 +11,58 @@ export default function Dashboard() {
     const [jobs, setJobs] = useState([]);
     const [filter, setFilter] = useState('All');
     const [showForm, setShowForm] = useState(false);
+    const [mailSettings, setMailSettings] = useState(null);
+    const [mailMessage, setMailMessage] = useState('');
 
-    const fetchJobs = useCallback(async () => {
-        const { data } = await api.get('/api/jobs');
-        setJobs(data);
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            const [jobsResponse, mailResponse] = await Promise.all([
+                api.get('/api/jobs/'),
+                api.get('/api/mail/settings'),
+            ]);
+
+            setJobs(jobsResponse.data);
+            setMailSettings(mailResponse.data);
+        };
+
+        fetchDashboardData(); 
     }, []);
 
-    useEffect(() => { fetchJobs(); }, [fetchJobs]);
-
-    const filtered = filter === 'All' ? jobs : jobs.filter(j => j.status === filter);
+    const filtered = Array.isArray(jobs)
+        ? (filter === 'All' ? jobs : jobs.filter(j => j.status === filter))
+        : [];
 
     const updateStatus = async (id, status) => {
         await api.patch(`/api/jobs/${id}`, { status });
-        fetchJobs();
+        setJobs(prev => prev.map(j => j._id === id ? { ...j, status } : j));
     };
 
     const deleteJob = async (id) => {
         await api.delete(`/api/jobs/${id}`);
-        fetchJobs();
+        setJobs(prev => prev.filter(j => j._id !== id));
+    };
+
+    const editJob = async (id, data) => {
+        await api.patch(`/api/jobs/${id}`, data); 
+        setJobs(prev => prev.map(j => j._id === id ? { ...j, ...data } : j)); 
+    };
+
+    const addJob = (newJob) => {
+        setJobs(prev => [newJob, ...prev]);
+        setShowForm(false);
+    }; 
+
+    const toggleMailTracking = async () => {
+        const response = await api.patch('/api/mail/settings', {
+            enabled: !mailSettings?.enabled,
+        });
+        setMailSettings(response.data);
+        setMailMessage(response.data.enabled ? 'Email tracking is on.' : 'Email tracking is paused.');
+    };
+
+    const sendSetupEmail = async () => {
+        const response = await api.post('/api/mail/send-setup-email');
+        setMailMessage(response.data.message);
     };
 
     return (
@@ -38,6 +72,34 @@ export default function Dashboard() {
             <span>Hi, {user?.name}</span>
             <button onClick={logout}>Logout</button>
         </header>
+
+        <section className="mail-tracking-card">
+            <div>
+                <p className="mail-tracking-eyebrow">Automatic tracking</p>
+                <h2>Forward recruiter emails into your board</h2>
+                <p className="mail-tracking-copy">
+                    Forward confirmation, interview, rejection, or offer emails to this address and the app will create or update jobs automatically.
+                </p>
+            </div>
+
+            <div className="mail-tracking-address">
+                {mailSettings?.forwardingAddress || 'Set MAIL_TRACKER_INBOX_DOMAIN to generate a forwarding address'}
+            </div>
+
+            <div className="mail-tracking-actions">
+                <button className="btn-add" type="button" onClick={sendSetupEmail}>
+                    Send setup email
+                </button>
+                <button className="btn-cancel" type="button" onClick={toggleMailTracking}>
+                    {mailSettings?.enabled ? 'Pause tracking' : 'Enable tracking'}
+                </button>
+            </div>
+
+            <p className="mail-tracking-meta">
+                Last sync: {mailSettings?.lastMailSyncAt ? new Date(mailSettings.lastMailSyncAt).toLocaleString() : 'No emails parsed yet'}
+            </p>
+            {mailMessage && <p className="mail-tracking-meta">{mailMessage}</p>}
+        </section>
 
         <div className="filters">
             {STATUSES.map(s => (
@@ -51,12 +113,15 @@ export default function Dashboard() {
             ))}
         </div>
 
-        <button onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Cancel' : '+ Add Job'}
+        <button
+            className="btn-add"
+            onClick={() => setShowForm(!showForm)}
+        >
+            {showForm ? '✕ Cancel' : '+ Add Job'}
         </button>
 
         {showForm && (
-            <AddJobForm onAdd={() => { fetchJobs(); setShowForm(false); }} />
+            <AddJobForm onAdd={addJob} />
         )}
 
         <div className="job-list">
@@ -66,6 +131,7 @@ export default function Dashboard() {
                 job={job}
                 onStatusChange={updateStatus}
                 onDelete={deleteJob}
+                onEdit={editJob}
             />
             ))}
         </div>

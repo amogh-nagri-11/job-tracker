@@ -4,7 +4,7 @@ const protect = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (!token) {
-        res.status(404).json({ error: "invalid token" });
+        return res.status(401).json({ error: "invalid token" });
     }
 
     try {
@@ -12,7 +12,7 @@ const protect = (req, res, next) => {
         req.user = decoded; 
         next(); 
     } catch {
-        res.status(401).json({ message: "not authorized" }); 
+        return res.status(401).json({ message: "not authorized" }); 
     }
 }; 
 
