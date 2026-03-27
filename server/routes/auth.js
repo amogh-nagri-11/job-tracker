@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { generateToken } from '../utils/generateToken.js';
 import protect from '../middleware/authMiddleware.js';
+import crypto from "crypto";
 
 
 const router = express.Router(); 

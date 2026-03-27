@@ -73,32 +73,28 @@ export default function Dashboard() {
             <button onClick={logout}>Logout</button>
         </header>
 
-        <section className="mail-tracking-card">
+        <section className="mail-tracking-card coming-soon">
             <div>
-                <p className="mail-tracking-eyebrow">Automatic tracking</p>
-                <h2>Forward recruiter emails into your board</h2>
+                <p className="mail-tracking-eyebrow">Upcoming Feature</p>
+                <h2>Email Auto-Tracking</h2>
                 <p className="mail-tracking-copy">
-                    Forward confirmation, interview, rejection, or offer emails to this address and the app will create or update jobs automatically.
+                    Automatically track recruiter emails and update your job board.
+                    This feature is currently under development and will be available soon.
                 </p>
             </div>
 
-            <div className="mail-tracking-address">
-                {mailSettings?.forwardingAddress || 'Set MAIL_TRACKER_INBOX_DOMAIN to generate a forwarding address'}
+            <div className="coming-soon-badge">
+                Coming Soon
             </div>
 
             <div className="mail-tracking-actions">
-                <button className="btn-add" type="button" onClick={sendSetupEmail}>
+                <button className="btn-disabled" disabled>
                     Send setup email
                 </button>
-                <button className="btn-cancel" type="button" onClick={toggleMailTracking}>
-                    {mailSettings?.enabled ? 'Pause tracking' : 'Enable tracking'}
+                <button className="btn-disabled" disabled>
+                    Enable tracking
                 </button>
             </div>
-
-            <p className="mail-tracking-meta">
-                Last sync: {mailSettings?.lastMailSyncAt ? new Date(mailSettings.lastMailSyncAt).toLocaleString() : 'No emails parsed yet'}
-            </p>
-            {mailMessage && <p className="mail-tracking-meta">{mailMessage}</p>}
         </section>
 
         <div className="filters">
