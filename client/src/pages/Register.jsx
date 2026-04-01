@@ -1,22 +1,21 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { useAuth } from '../hooks/useAuth.js';
 import api from '../api/axios';
 
 export default function Register() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [show, setShow]=useState(false);
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); 
+    setMessage('');
     try {
       const { data } = await api.post('/api/auth/register', form);
-      login(data);
-      navigate('/dashboard');
+      setMessage(data.message); 
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }
@@ -26,6 +25,11 @@ export default function Register() {
     <div className="auth-container">
       <h2>Register</h2>
       {error && <p className="error">{error}</p>}
+      {message && (
+        <p style={{ color: '#22c55e', marginBottom: '0.8rem', fontSize: '0.9rem' }}>
+          {message}
+        </p>
+      )}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
