@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import api from '../api/axios';
 import JobCard from '../components/JobCard';
 import AddJobForm from '../components/AddJobForm';
+import Profile from '../components/Profile';
 
 const STATUSES = ['All', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
@@ -13,6 +14,7 @@ export default function Dashboard() {
     const [showForm, setShowForm] = useState(false);
     const [mailSettings, setMailSettings] = useState(null);
     const [mailMessage, setMailMessage] = useState('');
+    const [showProfile, setShowProfile] = useState(false); 
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -70,8 +72,13 @@ export default function Dashboard() {
         <header>
             <h1>Job Tracker</h1>
             <span>Hi, {user?.name}</span>
+            <button className="btn-profile" onClick={() => setShowProfile(!showProfile)}>Profile</button>
             <button onClick={logout}>Logout</button>
         </header>
+
+        {showProfile && (
+            <Profile onClose={() => setShowProfile(false)} />
+        )}
 
         <section className="mail-tracking-card">
             <div>

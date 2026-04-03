@@ -180,6 +180,59 @@ router.post('/reset-password', async (req,res) => {
     }
 })
 
+//patch /api/auth/update profile 
+router.patch("/profile", protect, async (req, res) => {
+    const { name, email, currentPassword, newPassword } = req.body; 
+    try { 
+        const user = await User.findById(req.user.id);
+
+        if (!user) res.status(404).json({ error: "User not found" });
+
+        if (name) user.name = name;
+        
+        if (email && user.email != email) {
+            const exists = await User.findOne({ email }); 
+
+            if (exists) {
+                res.status(400).json({ error: "Email already in use" });
+            }
+
+            const verificationToken = crypto.randomBytes(32).toString('hex'); 
+            const verificationTokenExpiry = new Date(Date.now() + 60*60*1000);
+
+            user.email = email; 
+            user.isVerified = false;
+            user.verificationToken = verificationToken; 
+            user.verificationTokenExpiry = verificationTokenExpiry; 
+
+            await sendVerificationMail(user.email, verificationToken); 
+        }
+
+        if (currentPassword && newPassword) {
+            const compare = await bcrypt.compare(currentPassword, user.password); 
+            if (!compare) res.status(400).json({ error: "Wrong password" });
+            if (newPassword.length < 6) res.status(400).json({ error: "New password must be atleast 6 characters "});
+            user.password = await bcrypt.hash(newPassword, 10); 
+        }
+
+        await user.save();
+
+        res.status(200).json({
+        message: email && email !== user.email
+            ? 'Profile updated. Please verify your new email.'
+            : 'Profile updated successfully.',
+        user: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isVerified: user.isVerified,
+        }
+        });
+    } catch (err) { 
+        return res.status(500).json({ error: err.message });
+    }
+}); 
+
 //post /api/auth/logout
 // POST /api/auth/logout
 router.post('/logout', (req, res) => {

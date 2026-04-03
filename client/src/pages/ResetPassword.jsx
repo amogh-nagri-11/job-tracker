@@ -9,6 +9,7 @@ export default function ResetPassword() {
     const [confirm, setConfirm] = useState('');
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const [show, setShow] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -40,20 +41,36 @@ export default function ResetPassword() {
             </p>
         )}
         <form onSubmit={handleSubmit}>
-            <input
-            type="password"
-            placeholder="New password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            />
-            <input
-            type="password"
-            placeholder="Confirm new password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            required
-            />
+            <div className='password-wrapper'>
+                <input
+                type="password"
+                placeholder="New password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                />
+                <span
+                    className="eye"
+                    onClick={()=>setShow(s=>!s)}
+                >
+                    {show ? <FiEyeOff/> : <FiEye/>}
+                </span>
+            </div>
+            <div className='password-wrapper'>
+                <input
+                type={show ? 'text' : 'password'}
+                placeholder="Confirm New Password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                required
+                />
+                <span
+                    className="eye"
+                    onClick={()=>setShow(s=>!s)}
+                >
+                    {show ? <FiEyeOff/> : <FiEye/>}
+                </span>
+            </div>
             <button type="submit">Reset Password</button>
         </form>
         </div>
