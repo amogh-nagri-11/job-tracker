@@ -8,6 +8,8 @@ import crypto from "node:crypto";
 import { sendResetMail, sendVerificationMail } from '../utils/mailer.js';
 import { isNativeError } from 'util/types';
 import { isValidElement, useReducer } from 'react';
+import { validate } from 'node-cron';
+import { validateForgotPassword, validateLogin, validateProfileUpdate, validateRegister, validateResetPassword } from '../middleware/validators.js';
 
 const router = express.Router(); 
 
@@ -34,7 +36,7 @@ router.post('/test', async (req, res) => {
 })
 
 // post /api/auth/register 
-router.post('/register', async (req, res) => {
+router.post('/register', validateRegister, async (req, res) => {
     const { name, email, password } = req.body; 
 
     try {
@@ -101,7 +103,7 @@ router.get('/verify/:token', async (req, res) => {
 
 
 // post api/auth/login 
-router.post('/login', async (req, res) => {
+router.post('/login', validateLogin, async (req, res) => {
     const { email, password } = req.body; 
 
     try {
@@ -133,7 +135,7 @@ router.post('/login', async (req, res) => {
 }); 
 
 //forgot-password POST /api/auth/forgot-password 
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', validateForgotPassword, async (req, res) => {
     const { email } = req.body; 
     try {
         const user = await User.findOne({ email }) 
@@ -157,7 +159,7 @@ router.post('/forgot-password', async (req, res) => {
 }); 
 
 //reset-password POST /api/auth/reset-password
-router.post('/reset-password', async (req,res) => {
+router.post('/reset-password', validateResetPassword,async (req,res) => {
     const { token, password } = req.body; 
 
     try {
@@ -181,7 +183,7 @@ router.post('/reset-password', async (req,res) => {
 })
 
 //patch /api/auth/update profile 
-router.patch("/profile", protect, async (req, res) => {
+router.patch("/profile", protect, validateProfileUpdate,async (req, res) => {
     const { name, email, currentPassword, newPassword } = req.body; 
     try { 
         const user = await User.findById(req.user.id);

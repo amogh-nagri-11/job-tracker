@@ -1,6 +1,7 @@
 import express from 'express'; 
 import Job from '../models/Job.js';
 import protect from "../middleware/authMiddleware.js";
+import { validateJob } from '../middleware/validators.js';
 
 const router = express.Router(); 
 
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
 });
 
 // post add jobs 
-router.post('/', async (req, res) => {
+router.post('/', validateJob,async (req, res) => {
     const { company, role, status, notes, appliedDate } = req.body; 
     try {
         const job = await Job.create({
@@ -52,7 +53,7 @@ router.patch('/:id', async (req, res) => {
 }); 
 
 //delete - /api/jobs/:id - delete a job 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateJob,async (req, res) => {
     try {
         const job = await Job.findOneAndDelete({ _id: req.params.id, user: req.user.id }); 
         if (!job) return res.status(404).json({ error: "Job not found" }); 
