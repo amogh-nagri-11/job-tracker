@@ -25,7 +25,7 @@ const validateRegister = [
         .isLength({ min: 6 }).withMessage("Password must be atleast 6 characters") 
         .matches(/\d/).withMessage('Password must contain a number'), 
     
-    handleValidationErrorss
+    handleValidationErrors
 ]; 
 
 const validateLogin = [
