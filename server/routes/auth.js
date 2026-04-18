@@ -10,7 +10,7 @@ import { isNativeError } from 'util/types';
 import { isValidElement, useReducer } from 'react';
 import { validate } from 'node-cron';
 import { validateForgotPassword, validateLogin, validateProfileUpdate, validateRegister, validateResetPassword } from '../middleware/validators.js';
-import passport from 'passport';
+import passport from '../config/passport.js';
 
 const router = express.Router(); 
 
@@ -186,14 +186,22 @@ router.post('/reset-password', validateResetPassword,async (req,res) => {
 //GET /api/auth/goole 
 router.get('/google', 
     passport.authenticate('google', {
+        scope: ['profile', 'email'],
+        session: false, 
+    })
+);
+
+// GET /api/auth/google/callback 
+router.get('/google/callback', 
+    passport.authenticate('google', {
         session: false, 
         failureRedirect: `${process.env.CLIENT_URL}/login?error=email_exists`
-    }), 
+    }),
     async (req, res) => {
         await generateToken(req.user._id, res); 
         res.redirect(`${process.env.CLIENT_URL}/dashboard`);
     }
-)
+);
 
 //patch /api/auth/update profile 
 router.patch("/profile", protect, validateProfileUpdate,async (req, res) => {

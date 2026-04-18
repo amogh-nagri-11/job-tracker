@@ -8,9 +8,10 @@ import mailRoutes from './routes/mail.js';
 import cookieParser from 'cookie-parser';
 import { startMailTrackingServer } from './services/mailTrackerService.js';
 import helmet from 'helmet';
-import passport from 'passport';
 
 dotenv.config();
+
+import passport from './config/passport.js';
 
 const app = express(); 
 
