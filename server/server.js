@@ -33,8 +33,11 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/mail', mailRoutes);
 app.get('/', (req, res) => res.json({ message: "Job tracker api up and running " })); 
 
-await mongoose.connect(process.env.MONGO_URI); 
-console.log("MongoDB connected"); 
+const mongoUri = process.env.NODE_ENV === 'production'
+  ? process.env.MONGO_URI
+  : process.env.MONGO_URI_LOCAL || process.env.MONGO_URI;
+
+await mongoose.connect(mongoUri);
 
 startMailTrackingServer();
 
