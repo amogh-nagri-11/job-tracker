@@ -8,6 +8,7 @@ import mailRoutes from './routes/mail.js';
 import cookieParser from 'cookie-parser';
 import { startMailTrackingServer } from './services/mailTrackerService.js';
 import helmet from 'helmet';
+import passport from 'passport';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser());
+app.use(passport.initialize());
 
 // routes 
 app.use('/api/auth', authRoutes);
