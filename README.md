@@ -19,7 +19,7 @@ A full-stack MERN web application for tracking job applications.
 - **Email:** Nodemailer
 
 ## Live Demo
-[job-tracker.vercel.app](job-tracker-4ljljj76n-amogh-bhat-nagris-projects.vercel.app)
+[https://job-tracker-lovat-ten.vercel.app/](https://job-tracker-lovat-ten.vercel.app/)
 
 ## Local Setup
 ```bash
