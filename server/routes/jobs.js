@@ -53,7 +53,7 @@ router.patch('/:id', async (req, res) => {
 }); 
 
 //delete - /api/jobs/:id - delete a job 
-router.delete('/:id', validateJob,async (req, res) => {
+router.delete('/:id' ,async (req, res) => {
     try {
         const job = await Job.findOneAndDelete({ _id: req.params.id, user: req.user.id }); 
         if (!job) return res.status(404).json({ error: "Job not found" }); 

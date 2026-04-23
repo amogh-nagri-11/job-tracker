@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { useTheme } from '../hooks/useTheme.js';
 import api from '../api/axios';
 import JobCard from '../components/JobCard';
 import AddJobForm from '../components/AddJobForm';
 import Profile from '../components/Profile';
+import { FiMoon, FiSun } from 'react-icons/fi';
 
 const STATUSES = ['All', 'Applied', 'Interview', 'Offer', 'Rejected'];
 
 export default function Dashboard() {
     const { user, logout } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [jobs, setJobs] = useState([]);
     const [filter, setFilter] = useState('All');
     const [showForm, setShowForm] = useState(false);
@@ -72,6 +75,14 @@ export default function Dashboard() {
         <header>
             <h1>Job Tracker</h1>
             <span>Hi, {user?.name}</span>
+            <button
+                type="button"
+                className="theme-toggle"
+                onClick={toggleTheme}
+                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+            >
+                {theme === 'dark' ? <FiSun /> : <FiMoon />}
+            </button>
             <button className="btn-profile" onClick={() => setShowProfile(!showProfile)}>Profile</button>
             <button onClick={logout}>Logout</button>
         </header>
